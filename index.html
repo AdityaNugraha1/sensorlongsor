@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peringatan Longsor</title>
+  <link rel="icon" href="https://storage.googleapis.com/prakiot-406308.appspot.com/Untitled-1.png" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #f0f5f9, #cfe7fa);
+      color: #1a202c;
+      overflow-x: hidden;
+    }
+
+    center {
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 20px;
+      color: #2d3748;
+      font-size: 2em;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    .table-container {
+      margin: 20px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    th, td {
+      border-bottom: 1px solid #cbd5e0;
+      padding: 15px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #4a5568;
+      color: #ffffff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #edf2f7;
+    }
+
+    tr:hover {
+      background-color: #2d3748;
+      color: white;
+      cursor: pointer;
+    }
+
+    .maps-link {
+      color: #3498db;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .maps-link:hover {
+      color: #21618c;
+    }
+
+    @media only screen and (max-width: 600px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+
+      .table-container {
+        margin: 10px;
+      }
+    }
+
+    @media only screen and (max-width: 768px) {
+      th, td {
+        white-space: nowrap; 
+      }
+    }
+
+    /* Animasi Transisi untuk Header */
+    th, .table-container {
+      transition: background-color 0.3s, color 0.3s; /* Efek transisi smooth */
+    }
+
+    .table-container {
+      animation: fadeIn 1s; /* Durasi animasi 1 detik */
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0; /* Awalnya tidak terlihat */
+      }
+      to {
+        opacity: 1; /* Akhirnya terlihat sepenuhnya */
+      }
+    }
+  </style>
+</head>
+<body>
+  <center>
+    <h1>Peringatan Longsor</h1>
+    <div class="table-container">
+      <table id="data-table">
+        <tr>
+          <th>Waktu</th>
+          <th>Kelembapan Tanah</th>
+          <th>Curah Hujan</th>
+          <th>Potensi Longsor</th>
+          <th>Maps</th>
+        </tr>
+        <!-- Rows will be added here -->
+      </table>
+    </div>
+  </center>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchSensorData();
+      setInterval(fetchSensorData, 300000);
+    });
+
+    function fetchSensorData() {
+      fetch('https://praktikumiot-406205.et.r.appspot.com/api/sensor_data')
+        .then(response => response.json())
+        .then(data => {
+          const table = document.getElementById('data-table');
+          // Hapus baris data sebelumnya
+          let rows = table.getElementsByTagName('tr');
+          for (let i = rows.length - 1; i > 0; i--) {
+            table.deleteRow(i);
+          }
+          // Tambahkan baris data baru
+          data.forEach(row => {
+            const tr = document.createElement('tr');
+            const date = new Date(row.timestamp);
+            const formattedDate = date.toLocaleString();
+            tr.innerHTML = `<td>${formattedDate}</td><td>${row.soilMoisture}</td><td>${row.raindrops}</td><td>${row.potentialLandslide}</td><td class="maps-link" onclick="window.open('${row.Maps}', '_blank')">${row.Maps}</td>`;
+            table.appendChild(tr);
+          });
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
+</body>
+</html>
